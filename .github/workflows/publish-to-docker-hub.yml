@@ -1,17 +1,21 @@
-name: Docker Build and Push
+name: CI/CD
 
 on:
-  # Solo ejecuta el flujo de trabajo de manera manual
+  # Permite ejecutar el flujo de trabajo de manera manual
   workflow_dispatch:
-  # push:
-    # branches: ["main"]
+  
+  # Ejecuta el flujo de trabajo al hacer un git push  
+  push:
+     branches: ["main"]
   #  branches:
   #    - main  # Se ejecutará cuando haya un push en main
-  # pull_request:
-  #  branches:
+  pull_request:
+     branches: ["main"]
+    #  branches:
   #    - main    # Se ejecutará cuando haya un pull request en main   
 
 jobs:
+# Trabajo 1: Integración contínua (CI)
   build-and-push:
     runs-on: ubuntu-latest
 
@@ -25,7 +29,7 @@ jobs:
 # Hay que configurar los siguientes secretos
 # Settings > Secrets and variables > Actions > New repository secret
 # DOCKER_USERNAME → Tu usuario de Docker Hub.
-# DOCKER_PASSWORD → Tu token de acceso de Docker Hub (en lugar de la contraseña, genera un token en Docker Hub).
+# DOCKER_PASSWORD → Tu token de acceso de Docker Hub (en lugar de la contraseña, genera un token en Docker Hub). Asiga TODOS los permisos.
 
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -46,14 +50,19 @@ jobs:
       #    push: true
       #    tags: ${{ secrets.DOCKER_USERNAME }}/lamp-crud-app:latest
 
-# Hay que configurar los siguientes secretos
-# Settings > Secrets and variables > Actions > New repository secret
-# SSH_HOST → IP elástica o ombre DNS servidor de producción
-# SSH_USER → Usuario SSH. En EC2 de tipo Ubuntu en AWS: ubuntu      
-# SSH_KEY → Clave privada acceso por certificado
-# SSH_PORT → Puerto de escucha servicio SSH. Normalmente el 22.      
-
-
+ 
+  deploy:
+  # Trabajo 2: Despliegue contínuo (CD)
+    runs-on: ubuntu-latest
+  # Hasta que no se acabe el trabajo 1, no se inicia este trabajo
+    needs: build-and-push
+  # Hay que configurar los siguientes secretos:
+  # Settings > Secrets and variables > Actions > New repository secret
+  # SSH_HOST → IP elástica o ombre DNS servidor de producción
+  # SSH_USER → Usuario SSH. En EC2 de tipo Ubuntu en AWS: ubuntu      
+  # SSH_KEY → Clave privada acceso por certificado
+  # SSH_PORT → Puerto de escucha servicio SSH. Normalmente el 22.   
+    steps:
       - name: Despliegue en servidor de produccion
         uses: appleboy/ssh-action@v1.2.1
         with:
@@ -66,6 +75,4 @@ jobs:
                git pull origin main
                docker compose down
                docker compose pull apache
-               docker compose up -d
-
-              
+               docker compose up -d             
