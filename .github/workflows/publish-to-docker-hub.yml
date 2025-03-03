@@ -15,7 +15,7 @@ on:
   #    - main    # Se ejecutará cuando haya un pull request en main   
 
 jobs:
-# Trabajo 1: Integración contínua (CI)
+# Trabajo 1: Integración contínua (CI). Construye a imagen de la aplicación y la sube a un registro de contenedores (Docker Hub)
   build-and-push:
     runs-on: ubuntu-latest
 
@@ -52,7 +52,7 @@ jobs:
 
  
   deploy:
-  # Trabajo 2: Despliegue contínuo (CD)
+  # Trabajo 2: Despliegue contínuo (CD). Actualiza aplicación  en producción y descarga la imagen del registro de contenedores (Docker Hub)
     runs-on: ubuntu-latest
   # Hasta que no se acabe el trabajo 1, no se inicia este trabajo
     needs: build-and-push
