@@ -18,7 +18,7 @@ include_once("config.php");
 <body>
 <div>
 	<header>
-		<h1>ELECTROSHOP S.L.</h1>
+		<h1>ELECTROSHOP S.A.</h1>
 	</header>
 
 	<main>
