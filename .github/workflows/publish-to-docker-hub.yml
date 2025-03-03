@@ -1,13 +1,15 @@
 name: Docker Build and Push
 
 on:
-  push:
+  # Solo ejecuta el flujo de trabajo de manera manual
+  workflow_dispatch:
+  # push:
     # branches: ["main"]
-    branches:
-      - main  # Se ejecutará cuando haya un push en main
-  pull_request:
-    branches:
-      - main       
+  #  branches:
+  #    - main  # Se ejecutará cuando haya un push en main
+  # pull_request:
+  #  branches:
+  #    - main    # Se ejecutará cuando haya un pull request en main   
 
 jobs:
   build-and-push:
@@ -30,7 +32,7 @@ jobs:
 
       - name: Construir y etiquetar la imagen (BUILD)
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/mi-imagen:latest .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/lamp-crud-app:latest .
       
       - name: Subir imagen a Docker Hub (PUSH)
         run: |
@@ -44,6 +46,14 @@ jobs:
       #    push: true
       #    tags: ${{ secrets.DOCKER_USERNAME }}/lamp-crud-app:latest
 
+# Hay que configurar los siguientes secretos
+# Settings > Secrets and variables > Actions > New repository secret
+# SSH_HOST → IP elástica o ombre DNS servidor de producción
+# SSH_USER → Usuario SSH. En EC2 de tipo Ubuntu en AWS: ubuntu      
+# SSH_KEY → Clave privada acceso por certificado
+# SSH_PORT → Puerto de escucha servicio SSH. Normalmente el 22.      
+
+
       - name: Despliegue en servidor de produccion
         uses: appleboy/ssh-action@v1.2.1
         with:
@@ -52,7 +62,7 @@ jobs:
            key: ${{ secrets.SSH_KEY }}
            port: ${{ secrets.SSH_PORT }}   
            script: |
-               cd aplicacion-crud-php-produccion/
+               cd environment/aplicacion-crud-php-produccion/
                git pull origin main
                docker compose down
                docker compose pull apache
