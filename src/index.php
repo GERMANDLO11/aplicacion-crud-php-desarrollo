@@ -26,7 +26,7 @@ include_once("config.php");
 		<li><a href="index.php">Inicio</a></li>
 		<li><a href="add.html">Alta</a></li>
 	</ul>
-	<h2>Recursos Humanos</h2>
+	<h2>YA HEMOS TERMINADO!!!!!!!!</h2>
 	<table border="1">
 	<thead>
 		<tr>
